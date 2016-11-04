@@ -15,11 +15,11 @@ For more information, run mysql_main.sh -help
 ## Introduction
 ### Requirements 
 
-MySQL Maint is written as a bash script, and uses @mysql@ and @mysqldump@ binaries (debian users : @apt-get install mysql-client@).
+MySQL Maint is written as a bash script, and uses `mysql` and `mysqldump` binaries (debian users : `apt-get install mysql-client`).
 Is has been successfully tested on [http://www.debian.org debian] (etch, lenny and squeeze), [http://www.centos.org centos] 4.3, [http://www.freebsd.org FreeBSD] and [http://www.apple.com/server/macosx Mac OS X Server].
 Please report if you successfully (or unsuccessfully) used it on another platform. 
 
-Note that MySQL Maint may not be suitable for any situation : @mysqldump@ needs to acquire locks to create a consistent backup, and this may raise issues on highly loaded servers.
+Note that MySQL Maint may not be suitable for any situation : `mysqldump` needs to acquire locks to create a consistent backup, and this may raise issues on highly loaded servers.
 
 ### Installation
 
@@ -34,20 +34,20 @@ Note that the script itself may contain important information, such as a login/p
 There are two ways to configure MySQL Maint :
 
     * By editing the script, and modifying the script variables
-         - pros : the variables (login, password...) don't appear in the @ps@ command
+         - pros : the variables (login, password...) don't appear in the `ps` command
          - cons : the script can only backup one server (which is configured inside the script)
     
     * By passing command-line arguments
          - pros : you can backup as many servers as you like, by passing parameters on the command-line
-         - cons : any parameter passed to the command line will be seen in a @ps@
+         - cons : any parameter passed to the command line will be seen in a `ps`
 
 
 ### Quick start
-Edit mysql_maint.sh, and change @DB_HOST@, @DB_USER@, @DB_PASS@, @DB_PORT@ to suit your MySQL server configuration. Then, add a cron job to run @mysql_maint.sh -b@ to automatically backup your database server.
+Edit mysql_maint.sh, and change `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_PORT` to suit your MySQL server configuration. Then, add a cron job to run `mysql_maint.sh -b` to automatically backup your database server.
 
-If you did not change the @BACKUP_DIR@ variable, your backups will be stored in @~/backups/mysql@.
+If you did not change the `BACKUP_DIR` variable, your backups will be stored in `~/backups/mysql`.
 
-When you need to recover a database, run @bzcat <db-name>_<date>.sql.bz2|mysql -u <myuser> -p <mypassword> <db-name>@
+When you need to recover a database, run `bzcat <db-name>_<date>.sql.bz2|mysql -u <myuser> -p <mypassword> <db-name>`
 
 ### Command line arguments
   * `-b` : Ask MySQL Maint to perform a backup
@@ -66,7 +66,7 @@ If you want to backup server _sql.mycompany.com_, which runs MySQL on port _3330
 `mysql_maint -b -H sql.mycompany.com -P 33306 -u backupmanager -p b4ckupP455`
 
 #### Editing the script
-If you don't want to pass command line arguments (they can be seen in a @ps@), you can just edit the script, and change the variables default values. Then, you will just need to run @mysql_maint.sh -b@ (to perform a backup), or @mysql_maint.sh -m@ (to perform maintenance)
+If you don't want to pass command line arguments (they can be seen in a `ps`), you can just edit the script, and change the variables default values. Then, you will just need to run `mysql_maint.sh -b` (to perform a backup), or `mysql_maint.sh -m` (to perform maintenance)
 
 ### Adding MySQL Maint to your crontab
 Running MySQL Maint with cron is a good way to ensure your backups will be done regularly.
@@ -92,7 +92,7 @@ In each _database folder_ live the 4 different backup folder (current, daily, we
 The backups are bzipped and are named with the date of creation.
 
 ## How does it work ?
-Each time the script is called (with @-b@ option), it creates a new backup of each database in the 'current' folder. If the daily backup doesn't exist, the backup is copied from 'current' to 'daily'. Once a week, the same test is done for the 'weekly' backup, and so one for the monthly backup.
+Each time the script is called (with `-b` option), it creates a new backup of each database in the 'current' folder. If the daily backup doesn't exist, the backup is copied from 'current' to 'daily'. Once a week, the same test is done for the 'weekly' backup, and so one for the monthly backup.
 
 The current backups are stored during 24 hours.<br />
 The daily backups are stored during 7 days.<br />
