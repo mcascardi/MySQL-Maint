@@ -31,11 +31,22 @@
 # - monthly : performed once a month (monthday configurable) #
 ##############################################################
 
-source $(dirname $0)/settings.default.sh
+# echo ${BASH_SOURCE[0]}
 
-if [ -e $(dirname $0)/settings.sh ] 
+SOURCE="${BASH_SOURCE[0]}"
+
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink -f "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+BASE_PATH="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+source ${BASE_PATH}/settings.default.sh
+
+if [ -e ${BASE_PATH}/settings.sh ] 
 then
-    source $(dirname $0)/settings.sh
+    source ${BASE_PATH}/settings.sh
 fi
 
 # Path
