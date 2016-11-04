@@ -1,17 +1,5 @@
 Welcome to MySQL Maint, a bash script that perform backups and maintenance over your MySQL Servers
 
-Installation
-
-Copy the settings.default.conf file to settings.conf and edit or uncomment the variables there according to your server settings.
-
-Set it to run as a cron task. [optional]
-
-Don't forget that the script contains important information so don't forget to
-give it strict permissions (700 is good).
-
-For more information, run mysql_main.sh -help
-
-
 ## Introduction
 ### Requirements 
 
@@ -25,9 +13,15 @@ Note that MySQL Maint may not be suitable for any situation : `mysqldump` needs 
 
 Simply extract mysql_maint.sh anywhere on your system (for example ~/scripts).
 Don't forget to allow execution.
-Note that the script itself may contain important information, such as a login/password for your MySQL server. You should really take care to the permissions
 
-`chmod 700 mysql_maint.sh`
+Copy the settings.default.conf file to settings.conf and edit or uncomment the variables there according to your server settings.
+
+Set it to run as a cron task. [optional]
+
+Note that the settings.conf file contains important information, such as a login/password for your MySQL server, so don't forget to give it strict permissions (700 is good).
+
+For more information, run mysql_main.sh -help
+
 
 ## Configuration
 
