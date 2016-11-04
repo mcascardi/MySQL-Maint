@@ -1,11 +1,8 @@
-Welcome to MySQL Maint, a bash script that perform backups and maintenance over
-your MySQL Servers
+Welcome to MySQL Maint, a bash script that perform backups and maintenance over your MySQL Servers
 
 Installation
 
-Copy the settings.default.sh file to settings.sh and edit the variables there 
-according to your server settings. Comment out variables you haven't changed to
-avoid confusion.
+Copy the settings.default.conf file to settings.conf and edit or uncomment the variables there according to your server settings.
 
 Set it to run as a cron task. [optional]
 
