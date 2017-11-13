@@ -711,7 +711,7 @@ db_backup()
 		delete_old_backups $database
 	else
 		CURRENT_FILE=''
-		ECHO_FAIL "An error occurred while backing up ${db}"
+		ECHO_FAIL "An error occurred while backing up ${db} $?"
 		log_b "An error occurred while backing up $db"
 	fi
 }
