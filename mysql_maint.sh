@@ -75,7 +75,7 @@ MYSQL_CLIENT_VERSION=`${MYSQL_BIN} -V|${SED_BIN} -e 's/.*Distrib \([0-9.]*\).*/\
 # -f will be added if IGNORE_SQL_ERRORS is "yes"
 # -C will be added if USE_COMPRESSION is "yes"
 MYSQL_OPTS="-B -r -N"
-MYSQLDUMP_OPTS="--opt --skip-comments"
+MYSQLDUMP_OPTS="--opt --skip-comments --set-gtid-purged=OFF"
 if [ "${MYSQL_CLIENT_VERSION}" \> "5" ]; then
 	MYSQLDUMP_OPTS="$MYSQLDUMP_OPTS --routines --triggers"
 fi
