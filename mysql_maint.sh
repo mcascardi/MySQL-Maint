@@ -31,22 +31,6 @@
 # - monthly : performed once a month (monthday configurable) #
 ##############################################################
 
-
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink -f "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
-done
-BASE_PATH="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-
-source ${BASE_PATH}/settings.default.conf
-
-if [ -e ${BASE_PATH}/settings.conf ] 
-then
-    source ${BASE_PATH}/settings.conf
-fi
-
 # Path
 # export PATH='/usr/local/bin:/usr/local/mysql/bin:/usr/bin:/bin'
 
@@ -89,13 +73,15 @@ BZIP2_OPTS="-9"
 
 # Script pid file
 # Will avoid concurrent script executions
-PID_FILE="/tmp/mysql_maint.pid"
+PID_FILE="/var/run/mysql_maint.pid"
 
 # Dave Null
 TRASH="/dev/null"
 
 # Configuration file
+CONFIG_DIR='/etc/mysql.d'
 CONFIG_FILE=''
+
 
 # What should the script do ?
 # don't modify here, use -b (backup) or -m (maintenance) command-line options
@@ -240,6 +226,8 @@ print_usage()
 	echo ""
 	echo "Command-line options override the script variables"
 	echo ""
+	echo "-a : Process all configuration files in /etc/mysql.d/*conf"
+	echo "-c : Use settings from configuration file"
 	echo "-b : Perform a backup"
 	echo "-m : Perform maintenance"
 	echo "-H [host] : IP address or DNS name of the MySQL server (default: 127.0.0.1)"
@@ -257,10 +245,29 @@ print_version()
 	echo "MySQL Maintainer version ${VERSION}"
 }
 
+read_config()
+{
+       echo "Loading Configuration File: ${OPTARG}"
+       if [[ -e ${OPTARG} ]]; then
+	   CONFIG_FILE=$OPTARG
+	   # echo  "FOUND CONFIG FILE ${CONFIG_FILE}"
+	   if [[ -e "${CONFIG_FILE}" ]]; then
+	       source $CONFIG_FILE &> $TRASH
+	       if [ "0" -ne "$?" ]; then
+		   ECHO_FAIL "Failed to parse $CONFIG_FILE"
+		   end_script E_PARSE_CONFIG
+	       fi
+	   fi
+       else
+	   echo "${CONFIG_FILE} is not a file!"
+       fi
+
+}
+
 #########################################
 # Part 3 : Process command-line options #
 #########################################
-while getopts "bmhvlH:S:u:p:P:d:n:c" option
+while getopts "bmhvlH:S:u:p:P:d:n:c:" option
 do
 	case $option in
 		v)	# Version
@@ -272,7 +279,7 @@ do
 			exit $E_OK
 			;;
 		c)	# Config file
-			CONFIG_FILE=$OPTARG
+			read_config
 			;;
 		b)	# Backup
 			DO_BACKUP=1
@@ -297,6 +304,7 @@ do
 			;;
 		d)	# Backups folder
 			BACKUP_DIR=$OPTARG
+		       
 			;;
 		n)	# Server folder name
 			BACKUP_HOST_NAME=$OPTARG
@@ -307,15 +315,6 @@ do
 	esac
 done
 
-# Parse config file if necessary
-if [ -e "$CONFIG_FILE" -a -r "$CONFIG_FILE" ]; then
-	source $CONFIG_FILE &> $TRASH
-	if [ "0" -ne "$?" ]; then
-		ECHO_FAIL "Failed to parse $CONFIG_FILE"
-		end_script E_PARSE_CONFIG
-	fi
-fi
-
 if [ -z ${BACKUP_HOST_NAME} ]; then
 	BACKUP_HOST_NAME=$DB_HOST
 fi
@@ -323,16 +322,16 @@ fi
 BACKUP_BASE=${BACKUP_DIR}/${BACKUP_HOST_NAME}
 
 # IGNORE_SQL_ERRORS
-if [ ${IGNORE_SQL_ERRORS} = "yes" ]; then
-	MYSQL_OPTS="${MYSQL_OPTS} -f"
-	MYSQLDUMP_OPTS="${MYSQLDUMP_OPTS} -f"
-fi;
+#if [ ${IGNORE_SQL_ERRORS} = "yes" ]; then
+#	MYSQL_OPTS="${MYSQL_OPTS} -f"
+#	MYSQLDUMP_OPTS="${MYSQLDUMP_OPTS} -f"
+#fi;
 
 # USE_COMPRESSION
-if [ ${USE_COMPRESSION} = "yes" ]; then
-	MYSQL_OPTS="${MYSQL_OPTS} -C"
-	MYSQLDUMP_OPTS="${MYSQLDUMP_OPTS} -C"
-fi;
+#if [ ${USE_COMPRESSION} = "yes" ]; then
+#	MYSQL_OPTS="${MYSQL_OPTS} -C"
+#	MYSQLDUMP_OPTS="${MYSQLDUMP_OPTS} -C"
+#fi;
 
 # Store MySQL password and port in environment variables
 export MYSQL_PWD=${DB_PASS}
